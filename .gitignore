@@ -1,0 +1,3 @@
+*.o
+swiftlatex.wasm
+swiftlatex.js
