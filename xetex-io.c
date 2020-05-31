@@ -22,10 +22,7 @@ tt_xetex_open_input (int filefmt)
 {
     rust_input_handle_t handle;
 
-    if (filefmt == TTIF_TECTONIC_PRIMARY)
-        handle = ttstub_input_open_primary ();
-    else
-        handle = ttstub_input_open (name_of_file, (tt_input_format_type) filefmt, 0);
+    handle = ttstub_input_open(name_of_file, (tt_input_format_type)filefmt, 0);
 
     if (handle == NULL)
         return NULL;

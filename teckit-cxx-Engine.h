@@ -9,202 +9,203 @@ Responsibility: Jonathan Kew
 Last reviewed: Not yet.
 
 Description:
-        internal header for the TECkit mapping engine
+	internal header for the TECkit mapping engine
 -------------------------------------------------------------------------*/
 
 /*
-        2004-03-19	jk	updated for version 2.2 with new match()
-   function 2003-09-23	jk	updated for version 2.1 with new Opt APIs
+	2004-03-19	jk	updated for version 2.2 with new match() function
+	2003-09-23	jk	updated for version 2.1 with new Opt APIs
 */
 
 #ifndef __Engine_H__
 #define __Engine_H__
 
-#include "teckit-Format.h"
 #include "teckit-c-Engine.h"
+#include "teckit-Format.h"
 
 class Converter;
 
 class Stage
-/* abstract base class for pipeline stages, both mapping and normalization
-   passes */
+	/* abstract base class for pipeline stages, both mapping and normalization passes */
 {
 public:
-  Stage();
-  virtual ~Stage();
+						Stage();
+	virtual				~Stage();
 
-  virtual UInt32 getChar() = 0;
+	virtual UInt32		getChar() = 0;
 
-  virtual void Reset() = 0;
+	virtual void		Reset() = 0;
 
-  virtual UInt32 lookaheadCount() const;
+	virtual UInt32		lookaheadCount() const;
 
 protected:
-  friend class Converter;
+	friend class Converter;
 
-  UInt32 *oBuffer;
-  long oBufSize;
-  long oBufEnd; // points to next unused slot in oBuffer
-  long oBufPtr; // points to next char to be returned to caller (if less than
-                // oBufEnd)
+	UInt32*				oBuffer;
+	long				oBufSize;
+	long				oBufEnd;	// points to next unused slot in oBuffer
+	long				oBufPtr;	// points to next char to be returned to caller (if less than oBufEnd)
 
-  Stage *prevStage;
+	Stage*				prevStage;
 };
 
-class Normalizer : public Stage {
+class Normalizer
+	: public Stage
+{
 public:
-  Normalizer(bool compose);
-  virtual ~Normalizer();
+						Normalizer(bool compose);
+	virtual				~Normalizer();
 
-  virtual UInt32 getChar();
+	virtual UInt32		getChar();
 
-  virtual void Reset();
+	virtual void		Reset();
 
 protected:
-  UInt32 process();
+	UInt32				process();
 
-  void decompose(UInt32 c);
-  UInt32 decomposeOne(UInt32 &c);
+	void				decompose(UInt32 c);
+	UInt32				decomposeOne(UInt32& c);
 
-  void compose();
-  void generateChar(UInt32 c);
-  void appendChar(UInt32 c);
-  void insertChar(UInt32 insCh, int insCombClass);
-  void growOutBuf();
+	void				compose();
+	void				generateChar(UInt32 c);
+	void				appendChar(UInt32 c);
+	void				insertChar(UInt32 insCh, int insCombClass);
+	void				growOutBuf();
 
-  int prevCombClass;
-  long oBufSafe;
+	int					prevCombClass;
+	long				oBufSafe;
 
-  bool bCompose;
+	bool				bCompose;
 };
 
-class Pass : public Stage {
+class Pass
+	: public Stage
+{
 public:
-  Pass(const TableHeader *inTable, Converter *cnv);
-  virtual ~Pass();
+						Pass(const TableHeader* inTable, Converter* cnv);
+	virtual				~Pass();
 
-  virtual UInt32 getChar();
+	virtual UInt32		getChar();
 
-  virtual void Reset();
+	virtual void		Reset();
 
-  virtual UInt32 lookaheadCount() const;
+	virtual UInt32		lookaheadCount() const;
 
 protected:
-  UInt32 DoMapping();
+	UInt32				DoMapping();
 
-  void outputChar(UInt32 c);
+	void				outputChar(UInt32 c);
 
-  UInt32 inputChar(long inIndex);
-  void advanceInput(unsigned int numChars);
+	UInt32				inputChar(long inIndex);
+	void				advanceInput(unsigned int numChars);
 
-  long classMatch(UInt32 classNumber, UInt32 inChar) const;
-  UInt32 repClassMember(UInt32 classNumber, UInt32 index) const;
+	long				classMatch(UInt32 classNumber, UInt32 inChar) const;
+	UInt32				repClassMember(UInt32 classNumber, UInt32 index) const;
 
-  struct MatchInfo {
-    UInt32 classIndex;
-    int groupRepeats;
-    struct {
-      UInt16 start;
-      UInt16 limit;
-    } matchedSpan;
-  };
+	struct MatchInfo {
+		UInt32			classIndex;
+		int				groupRepeats;
+		struct {
+			UInt16			start;
+			UInt16			limit;
+		}				matchedSpan;
+	};
 
-  UInt32 match(int index, int repeats, int textLoc);
-  // returns 0 for no match, 1 for match, or kNeedMoreInput/kInvalidChar
-  const MatchElem *pattern;
-  int patternLength;
-  int direction;
-  MatchInfo info[256];
-  int infoLimit;
-  int matchElems;
-  int matchedLength;
+	UInt32				match(int index, int repeats, int textLoc);
+								// returns 0 for no match, 1 for match, or kNeedMoreInput/kInvalidChar
+	const MatchElem*			pattern;
+	int					patternLength;
+	int					direction;
+	MatchInfo			info[256];
+	int					infoLimit;
+	int					matchElems;
+	int					matchedLength;
 
-  int groupRepeats;
-  struct sgrStackItem {
-    sgrStackItem *link;
-    int savedGroupRepeats;
-  };
-  sgrStackItem *sgrStack;
+	int					groupRepeats;
+	struct sgrStackItem {
+		sgrStackItem*	link;
+		int				savedGroupRepeats;
+	};
+	sgrStackItem*		sgrStack;
 
-  Converter *converter;
-  const TableHeader *tableHeader;
+	Converter*			converter;
+	const TableHeader*	tableHeader;
 
-  const Byte *pageBase;
-  const Lookup *lookupBase;
-  const Byte *matchClassBase;
-  const Byte *repClassBase;
-  const Byte *stringListBase;
-  const Byte *stringRuleData;
-  const Byte *planeMap;
+	const Byte*			pageBase;
+	const Lookup*		lookupBase;
+	const Byte*			matchClassBase;
+	const Byte*			repClassBase;
+	const Byte*			stringListBase;
+	const Byte*			stringRuleData;
+	const Byte*			planeMap;
 
-  UInt32 *iBuffer;
-  long iBufSize;
-  long iBufStart; // points to earliest valid char in iBuffer
-  long iBufEnd;   // points to next unused slot in iBuffer (one past last valid
-                  // char)
-  long iBufPtr; // points to next char to be fetched from iBuffer (if less than
-                // iBufEnd)
+	UInt32*				iBuffer;
+	long				iBufSize;
+	long				iBufStart;	// points to earliest valid char in iBuffer
+	long				iBufEnd;	// points to next unused slot in iBuffer (one past last valid char)
+	long				iBufPtr;	// points to next char to be fetched from iBuffer (if less than iBufEnd)
 
-  bool bInputIsUnicode;
-  bool bOutputIsUnicode;
-  bool bSupplementaryChars;
-  UInt8 numPageMaps;
+	bool				bInputIsUnicode;
+	bool				bOutputIsUnicode;
+	bool				bSupplementaryChars;
+	UInt8				numPageMaps;
 };
 
-class Converter : public Stage {
+class Converter
+	: public Stage
+{
 public:
-  Converter(const Byte *inTable, UInt32 inTableSize, bool inForward,
-            UInt16 inForm, UInt16 outForm);
-  ~Converter();
+						Converter(const Byte* inTable, UInt32 inTableSize, bool inForward,
+									UInt16 inForm, UInt16 outForm);
+						~Converter();
 
-  TECkit_Status ConvertBufferOpt(const Byte *inBuffer, UInt32 inLength,
-                                 UInt32 *inUsed, Byte *outBuffer,
-                                 UInt32 outLength, UInt32 *outUsed,
-                                 UInt32 inOptions, UInt32 *lookaheadCount);
+	TECkit_Status		ConvertBufferOpt(const Byte* inBuffer, UInt32 inLength, UInt32* inUsed,
+							  Byte* outBuffer, UInt32 outLength, UInt32* outUsed,
+							  UInt32 inOptions, UInt32* lookaheadCount);
 
-  virtual void Reset();
+	virtual void		Reset();
 
-  virtual UInt32 getChar();
+	virtual UInt32		getChar();
 
-  bool IsForward() const;
-  void GetFlags(UInt32 &sourceFlags, UInt32 &targetFlags) const;
-  bool GetNamePtr(UInt16 inNameID, const Byte *&outNamePtr,
-                  UInt32 &outNameLen) const;
+	bool				IsForward() const;
+	void				GetFlags(UInt32& sourceFlags, UInt32& targetFlags) const;
+	bool				GetNamePtr(UInt16 inNameID, const Byte*& outNamePtr, UInt32& outNameLen) const;
 
-  long creationStatus() const { return status; }
+	long				creationStatus() const
+							{ return status; }
 
-  static bool Validate(const Converter *cnv);
+	static bool			Validate(const Converter* cnv);
 
 protected:
-  friend class Pass;
-  friend class Normalizer;
+	friend class Pass;
+	friend class Normalizer;
 
-  UInt32 _getCharFn();
-  UInt32 _getCharWithSavedBytes();
-  void _savePendingBytes();
+	UInt32				_getCharFn();
+	UInt32				_getCharWithSavedBytes();
+	void				_savePendingBytes();
 
-  Byte *table;
+	Byte*				table;
 
-  Stage *finalStage;
+	Stage*				finalStage;
 
-  const Byte *data;
-  UInt32 dataPtr;
-  UInt32 dataLen;
-  bool inputComplete;
-  Byte unmappedBehavior;
+	const Byte*			data;
+	UInt32				dataPtr;
+	UInt32				dataLen;
+	bool				inputComplete;
+	Byte				unmappedBehavior;
 
-  bool forward;
+	bool				forward;
 
-  Byte inputForm;
-  Byte outputForm;
+	Byte				inputForm;
+	Byte				outputForm;
 
-  Byte savedBytes[8];
-  UInt32 savedCount;
+	Byte				savedBytes[8];
+	UInt32				savedCount;
 
-  UInt32 pendingOutputChar;
-  long status;
+	UInt32				pendingOutputChar;
+	long				status;
 
-  UInt32 warningStatus;
+	UInt32				warningStatus;
 };
 
 #endif /* __Engine_H__ */

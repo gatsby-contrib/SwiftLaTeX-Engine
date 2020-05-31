@@ -271,7 +271,8 @@ int compileLaTeX() {
     printf("This is SwiftLaTeX, Version 2.13 (TeX Live 2019/Gentoo) (preloaded format=swiftlatex)\n");
     printf(" restricted \\write18 enabled.\n");
     printf("entering extended mode\n");
-    return tex_simple_main(&ourapi, "swiftlatex.fmt", MAIN_ENTRY_FILE, time(0), 0);
+    // abort();
+    return tex_simple_main(&ourapi, "swiftlatex21ori.fmt", MAIN_ENTRY_FILE, time(0), 0);
 }
 
 int compileFormat() {
@@ -291,13 +292,18 @@ int compileBibtex() {
 
 int compilePDF(){
     char main_xdv_file[512];
+    char main_pdf_file[512];
     strncpy(main_xdv_file, MAIN_ENTRY_FILE, 512);
+    strncpy(main_pdf_file, MAIN_ENTRY_FILE, 512);
     int len = strlen(main_xdv_file);
     if(len < 3) return -1;
     main_xdv_file[len - 1] = 'v';
     main_xdv_file[len - 2] = 'd';
     main_xdv_file[len - 3] = 'x';
-    return dvipdfmx_simple_main(&ourapi, main_xdv_file, "result.pdf", false, false, time(0));
+    main_pdf_file[len - 1] = 'f';
+    main_pdf_file[len - 2] = 'd';
+    main_pdf_file[len - 3] = 'p';
+    return dvipdfmx_simple_main(&ourapi, main_xdv_file, main_pdf_file, false, false, time(0));
   // return tex_simple_main(&ourapi, "xelatex.fmt", "xelatex.ini", time(0), 1); //xelatex.fmt does not matter
 }
 

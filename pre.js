@@ -120,16 +120,15 @@ function compileLaTeXRoutine() {
     }
 }
 
-function convertXDVRoutine() {
+function compilePDFRoutine() {
     prepareExecutionContext();
     const setMainFunction = cwrap('setMainEntry', 'number', ['string']);
     setMainFunction(self.mainfile);
-    let status = _compileLaTeX();
-    if (status === 0 || status === 1) {
+    let status = _compilePDF();
+    if (status === 0) {
         let pdfArrayBuffer = null;
-        _compileBibtex();
         try {
-            let pdfurl = WORKROOT + "/" + self.mainfile.substr(0, self.mainfile.length - 4) + ".xdv"
+            let pdfurl = WORKROOT + "/" + self.mainfile.substr(0, self.mainfile.length - 4) + ".pdf"
             pdfArrayBuffer = FS.readFile(pdfurl, {
                 encoding: 'binary'
             });
@@ -241,8 +240,8 @@ self['onmessage'] = function(ev) {
         compileLaTeXRoutine();
     } else if (cmd === 'compileformat') {
         compileFormatRoutine();
-    } else if (cmd === 'convert') {
-        convertXDVRoutine();
+    } else if (cmd === 'compilepdf') {
+        compilePDFRoutine();
     } else if (cmd === "mkdir") {
         mkdirRoutine(data['url']);
     } else if (cmd === "writefile") {

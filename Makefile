@@ -1,7 +1,7 @@
 CC=emcc
 CXX=em++
 DEBUGFLAGS = -O3
-CFLAGS = $(DEBUGFLAGS) -Igraphite2/include -Iharfbuzz/include -s USE_FREETYPE=1 -s USE_HARFBUZZ=1 -s USE_ICU=1 -s USE_LIBPNG=1
+CFLAGS = $(DEBUGFLAGS) -DHAVE_ZLIB -Igraphite2/include -Iharfbuzz/include -s USE_FREETYPE=1 -s USE_HARFBUZZ=1 -s USE_ICU=1 -s USE_LIBPNG=1 
 LDFLAGS =  $(DEBUGFLAGS)  --js-library library.js -s USE_FREETYPE=1 \
  -s USE_HARFBUZZ=1 -s USE_LIBPNG=1 --pre-js pre.js \
  -s EXPORTED_FUNCTIONS='["_compileBibtex", "_compileLaTeX", "_compileFormat", "_compilePDF", "_setMainEntry", "_main"]' -s NO_EXIT_RUNTIME=1 \
@@ -11,7 +11,7 @@ CXX_LINK = $(CXX) -o $@ $(LDFLAGS)
 csources = xetex-io.c xetex-xetex0.c xetex-ini.c xetex-texmfmp.c xetex-errors.c \
 xetex-scaledmath.c xetex-output.c xetex-stringpool.c core-memory.c core-bridge.c \
 xetex-pagebuilder.c xetex-shipout.c xetex-math.c xetex-ext.c xetex-linebreak.c \
- xetex-pic.c bibtex.c md5.c xetex-wasm.c miniz.c \
+ xetex-pic.c bibtex.c md5.c xetex-wasm.c  \
 dpx-agl.c         dpx-dvi.c        dpx-pdfdoc.c       dpx-spc_color.c     dpx-tt_aux.c \
 dpx-bmpimage.c    dpx-dvipdfmx.c   dpx-pdfdraw.c      dpx-spc_dvipdfmx.c  dpx-tt_cmap.c \
 dpx-cff.c         dpx-epdf.c       dpx-pdfencoding.c  dpx-spc_dvips.c     dpx-tt_glyf.c \
