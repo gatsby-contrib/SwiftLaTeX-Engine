@@ -58,7 +58,7 @@ cobjects = $(csources:.c=.o)
 
 cppobjects = $(cppsources:.cpp=.o)
 
-swiftlatex.js: $(headers) $(cobjects) $(cppobjects) 
+swiftlatex_export.js: $(headers) $(cobjects) $(cppobjects) 
 	$(CXX_LINK) $(cobjects) $(cppobjects)
 
 $(cobjects): %.o: %.c

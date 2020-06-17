@@ -1,3 +1,5 @@
 *.o
-swiftlatex.wasm
-swiftlatex.js
+*.wasm
+*.js
+*.tsx
+*.ts
